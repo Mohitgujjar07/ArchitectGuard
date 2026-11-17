@@ -1,0 +1,33 @@
+name: ArchitectGuard Architecture Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  schedule:
+    # Run weekly on Monday morning to catch expired assumptions
+    - cron: '0 8 * * 1'
+
+jobs:
+  check-architecture:
+    name: Audit ADR Assumptions & Risk
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ArchitectGuard
+        run: |
+          pip install --upgrade pip
+          pip install .
+
+      - name: Run Architecture Health Gate
+        run: |
+          ag check --fail-on-expired --fail-on-risk-above 0.5

@@ -1,0 +1,111 @@
+{
+  "project_name": "FinPay Authentication & Notification Architecture (2019–2026)",
+  "assumptions": [
+    {
+      "id": "A1",
+      "statement": "SMS OTP gateway costs 0.25 INR per message within our 15,000 INR monthly budget",
+      "category": "Financial",
+      "created_at": "2019-06-15",
+      "valid_until": "2027-12-31",
+      "scope": "< 60,000 logins/month",
+      "confidence": 1.0,
+      "status": "VALID",
+      "tags": ["pricing", "telecom"]
+    },
+    {
+      "id": "A2",
+      "statement": "Transactional Email API remains free up to 10,000 emails per day",
+      "category": "Financial",
+      "created_at": "2020-01-10",
+      "valid_until": "2028-01-01",
+      "scope": "< 300,000 emails/month",
+      "confidence": 1.0,
+      "status": "VALID",
+      "tags": ["email", "vendor"]
+    },
+    {
+      "id": "A3",
+      "statement": "Legacy Telecom DLT template approval does not require annual renewal",
+      "category": "Legal",
+      "created_at": "2019-08-01",
+      "valid_until": "2025-12-31",
+      "scope": "India Telecom Compliance",
+      "confidence": 1.0,
+      "status": "VALID",
+      "tags": ["regulatory", "india"]
+    },
+    {
+      "id": "A4",
+      "statement": "Redis session cache stays under 512 MB RAM on free tier",
+      "category": "Technical",
+      "created_at": "2021-03-12",
+      "valid_until": "2027-06-30",
+      "scope": "< 100k active tokens",
+      "confidence": 0.95,
+      "status": "VALID",
+      "tags": ["infra", "caching"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "title": "Primary Login via SMS OTP",
+      "description": "Use SMS OTP as the sole user authentication mechanism",
+      "created_at": "2019-06-20",
+      "criticality": 0.95,
+      "status": "VALID",
+      "risk_score": 0.0,
+      "tags": ["auth", "security"]
+    },
+    {
+      "id": "D2",
+      "title": "Stateless Zero-Cache Login Flow",
+      "description": "Require fresh OTP verification on every login without persistent tokens",
+      "created_at": "2019-07-02",
+      "criticality": 0.85,
+      "status": "VALID",
+      "risk_score": 0.0,
+      "tags": ["auth", "sessions"]
+    },
+    {
+      "id": "D3",
+      "title": "Skip Email Verification During Onboarding",
+      "description": "Do not collect or verify user email addresses at signup",
+      "created_at": "2019-07-15",
+      "criticality": 0.8,
+      "status": "VALID",
+      "risk_score": 0.0,
+      "tags": ["onboarding"]
+    },
+    {
+      "id": "D4",
+      "title": "Automated DLT SMS Alert Worker",
+      "description": "Send instant SMS receipts for every wallet transaction",
+      "created_at": "2020-02-10",
+      "criticality": 0.75,
+      "status": "VALID",
+      "risk_score": 0.0,
+      "tags": ["notifications"]
+    },
+    {
+      "id": "D5",
+      "title": "SMS-Based Password & PIN Reset",
+      "description": "Route all account recovery flows exclusively through SMS OTP",
+      "created_at": "2020-05-18",
+      "criticality": 0.9,
+      "status": "VALID",
+      "risk_score": 0.0,
+      "tags": ["recovery", "auth"]
+    }
+  ],
+  "dependencies": [
+    { "source_id": "A1", "target_id": "D1", "weight": 0.95, "rationale": "Low SMS unit cost justifies SMS-first login" },
+    { "source_id": "A3", "target_id": "D1", "weight": 0.70, "rationale": "Relies on uninterrupted DLT SMS delivery" },
+    { "source_id": "D1", "target_id": "D2", "weight": 0.90, "rationale": "Cheap per-login SMS removes need for session caching" },
+    { "source_id": "A4", "target_id": "D2", "weight": 0.60, "rationale": "Avoids using Redis RAM for long-lived sessions" },
+    { "source_id": "D1", "target_id": "D3", "weight": 0.85, "rationale": "Phone number alone acts as verified identity" },
+    { "source_id": "A1", "target_id": "D4", "weight": 0.80, "rationale": "High-frequency SMS alerts assume 0.25 INR tariff" },
+    { "source_id": "A3", "target_id": "D4", "weight": 0.75, "rationale": "Transactional templates require valid DLT status" },
+    { "source_id": "D3", "target_id": "D5", "weight": 0.90, "rationale": "Without verified emails, recovery must use SMS" }
+  ]
+}
