@@ -16,9 +16,9 @@ def test_add_nodes_and_duplicate_prevention(empty_engine):
 
 
 def test_cycle_detection(empty_engine):
-    empty_engine.add_decision(Decision(id="D1", title="D1", description="desc"))
-    empty_engine.add_decision(Decision(id="D2", title="D2", description="desc"))
-    empty_engine.add_decision(Decision(id="D3", title="D3", description="desc"))
+    empty_engine.add_decision(Decision(id="D1", title="Decision 1", description="desc"))
+    empty_engine.add_decision(Decision(id="D2", title="Decision 2", description="desc"))
+    empty_engine.add_decision(Decision(id="D3", title="Decision 3", description="desc"))
 
     empty_engine.add_dependency(DependencyEdge(source_id="D1", target_id="D2"))
     empty_engine.add_dependency(DependencyEdge(source_id="D2", target_id="D3"))
@@ -32,8 +32,8 @@ def test_cycle_detection(empty_engine):
 
 
 def test_target_cannot_be_assumption(empty_engine):
-    empty_engine.add_assumption(Assumption(id="A1", statement="Premise 1"))
-    empty_engine.add_decision(Decision(id="D1", title="D1", description="desc"))
+    empty_engine.add_assumption(Assumption(id="A1", statement="Premise 1 holds"))
+    empty_engine.add_decision(Decision(id="D1", title="Decision 1", description="desc"))
 
     with pytest.raises(ValueError, match="must be a Decision, not an Assumption"):
         empty_engine.add_dependency(DependencyEdge(source_id="D1", target_id="A1"))

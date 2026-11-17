@@ -28,7 +28,7 @@ Chosen option: PostgreSQL 16 on Amazon RDS.
     res = parser.parse_file(adr_file)
 
     # Check Decision
-    assert res.decision.id == "D_001"
+    assert res.decision.id == "D_0001"
     assert "Use PostgreSQL" in res.decision.title
     assert "Amazon RDS" in res.decision.description
 
@@ -55,5 +55,5 @@ def test_markdown_adr_parser_directory(tmp_path):
     results = parser.parse_directory(tmp_path)
     assert len(results) == 2
     ids = [r.decision.id for r in results]
-    assert "D_001" in ids
-    assert "D_002" in ids
+    assert "D_0001" in ids
+    assert "D_0002" in ids

@@ -48,6 +48,15 @@ def _get_project_context() -> Tuple[ProjectStore, ADIEGraphEngine]:
                 engine.attach_storage(store)
                 return store, engine
 
+    # Auto-initialize fallback if data/sample_scenario.json exists (e.g. in fresh CI clone)
+    sample_file = Path.cwd() / "data" / "sample_scenario.json"
+    if sample_file.exists():
+        store = ProjectStore(DEFAULT_DB)
+        engine = ADIEGraphEngine.from_json(str(sample_file))
+        engine.attach_storage(store)
+        store.save_project(engine)
+        return store, engine
+
     err_console.print(
         "[red]Error:[/red] Not in an ArchitectGuard repository. Run [cyan]ag init[/cyan] to initialize."
     )
@@ -307,7 +316,7 @@ def export_cmd(
         content = payload.model_dump_json(indent=2)
     else:
         lines = [
-            f"# AssumptionPulse Report: {engine.project_name}",
+            f"# ArchitectGuard Report: {engine.project_name}",
             f"\n*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n",
             "## 1. Assumptions Ledger\n",
             "| ID | Statement | Category | Valid Until | Confidence | Status |",

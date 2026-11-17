@@ -38,6 +38,8 @@ class MarkdownADRParser:
         r"\bfree\s+tier\b",
         r"\bsla\b",
         r"\buptime\b",
+        r"\bscale\b",
+        r"\bconnections?\b",
     ]
 
     def __init__(self):

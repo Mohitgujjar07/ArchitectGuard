@@ -12,7 +12,7 @@ def test_cli_init_and_status(tmp_path, monkeypatch):
     # Init
     result = runner.invoke(app, ["init", "Test Architecture"])
     assert result.exit_code == 0
-    assert "Initialized AssumptionPulse project" in result.stdout
+    assert "Initialized ArchitectGuard project" in result.stdout
 
     # Status on empty project
     result = runner.invoke(app, ["status"])
@@ -76,7 +76,7 @@ def test_cli_export(tmp_path, monkeypatch):
     # Export markdown
     res_md = runner.invoke(app, ["export", "--format", "markdown"])
     assert res_md.exit_code == 0
-    assert "# AssumptionPulse Report: Export Project" in res_md.stdout
+    assert "# ArchitectGuard Report: Export Project" in res_md.stdout
 
     # Export json
     res_json = runner.invoke(app, ["export", "--format", "json"])
